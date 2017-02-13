@@ -1,13 +1,13 @@
 {
   "name": "stormer-mysql",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Implementation of Stormer Store for MySQL",
   "main": "index.js",
   "repository": "git@github.com:Avocarrot/stormer-mysql.git",
   "author": "dmtrs",
   "license": "MIT",
   "engines": {
-    "node": "6.9.0"
+    "node": ">=6.9.0"
   },
   "scripts": {
     "pretest": "eslint --ignore-path .gitignore .",
