@@ -6,6 +6,9 @@
   "repository": "git@github.com:Avocarrot/stormer-mysql.git",
   "author": "dmtrs",
   "license": "MIT",
+  "engines": {
+    "node": "6.9.0"
+  },
   "scripts": {
     "pretest": "eslint --ignore-path .gitignore .",
     "test": "find ./test -name '*.spec.js' | xargs tape NODE_ENV=test",
