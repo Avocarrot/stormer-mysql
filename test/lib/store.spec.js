@@ -1,8 +1,8 @@
 const test  = require('tape');
 const NotFoundError = require('stormer').errors.NotFoundError;
 
-const Store = require('../index');
-const Condition = require('../lib/condition');
+const Store = require('../../lib/store');
+const Condition = require('../../lib/condition');
 
 const mysql = require('mysql');
 const sinon = require('sinon');

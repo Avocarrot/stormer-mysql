@@ -5,8 +5,21 @@ Implementation of Stormer Store for MySQL
 
 ## Requirements
 
-[Stormer ^v0.9.0 ](https://github.com/Avocarrot/stormer/tree/v0.9.0)
+- [stormer ^v0.9.0 ](https://www.npmjs.com/package/stormer)
+- [mysql ^v2.31.0 ](https://www.npmjs.com/package/mysql)
 
+## Usage
+
+```js
+const mysql = require('mysql');
+const Store = require('stormer-mysql').MySqlStore;
+
+// mysql connection options as found here:
+//https://www.npmjs.com/package/mysql#connection-options
+const options = {}; 
+
+const db = new Store(mysql, options);
+```
 
 ## Contributing
 
