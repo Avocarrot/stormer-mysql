@@ -297,6 +297,76 @@ test('store.filter(model, query) should resolve with array', (assert) => {
   mysql.createPool.restore();
 });
 
+test('store.filter(model, query) should query with limit/offset', (assert) => {
+  assert.plan(2);
+  const expected = [ ];
+  sinon.stub(mysql, 'createPool', ()=> {
+    return {
+      query: (sql, cb) => {
+        assert.equals(sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1  LIMIT 1 OFFSET 10;');
+        cb(null, expected);
+      }
+    };
+  });
+
+  const store = new Store(mysql, {});
+  store.define('test', model);
+
+  store.filter('test', {
+    _limit:  1,
+    _offset: 10
+  })
+    .then(actual => assert.deepEquals(actual, expected))
+    .catch(err => assert.error(err));
+  mysql.createPool.restore();
+});
+
+test('store.filter(model, query) should query with order by for existing properties', (assert) => {
+  assert.plan(2);
+  const expected = [ ];
+  sinon.stub(mysql, 'createPool', ()=> {
+    return {
+      query: (sql, cb) => {
+        assert.equals(sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1 ORDER BY `foo` DESC, `id` ASC;');
+        cb(null, expected);
+      }
+    };
+  });
+
+  const store = new Store(mysql, {});
+  store.define('test', model);
+
+  store.filter('test', {
+    _order: { foo: 'DESC', id: 'ASC', unknown: 'ASC' }
+  })
+    .then(actual => assert.deepEquals(actual, expected))
+    .catch(err => assert.error(err));
+  mysql.createPool.restore();
+});
+
+test('store.filter(model, query) should query without order by for not existing properties', (assert) => {
+  assert.plan(2);
+  const expected = [ ];
+  sinon.stub(mysql, 'createPool', ()=> {
+    return {
+      query: (sql, cb) => {
+        assert.equals(sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1;');
+        cb(null, expected);
+      }
+    };
+  });
+
+  const store = new Store(mysql, {});
+  store.define('test', model);
+
+  store.filter('test', {
+    _order: { unknown: 'ASC' }
+  })
+    .then(actual => assert.deepEquals(actual, expected))
+    .catch(err => assert.error(err));
+  mysql.createPool.restore();
+});
+
 test('store._set(model, obj, \'operation\') should reject for unsupported operation', (assert) => {
   assert.plan(1);
   const store = new Store(mysql, {});
