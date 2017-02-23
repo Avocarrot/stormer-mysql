@@ -367,6 +367,27 @@ test('store.filter(model, query) should query without order by for not existing 
   mysql.createPool.restore();
 });
 
+test('store.count(model, query) should perform count query', (assert) => {
+  assert.plan(2);
+  const expected = [ { count: 1 } ];
+  sinon.stub(mysql, 'createPool', ()=> {
+    return {
+      query: (sql, cb) => {
+        assert.equals(sql, 'SELECT COUNT(*) AS `count` FROM `test` WHERE 1=1;');
+        cb(null, expected);
+      }
+    };
+  });
+
+  const store = new Store(mysql, {});
+  store.define('test', model);
+
+  store.count('test', { })
+    .then(actual => assert.deepEquals(actual, 1))
+    .catch(err => assert.error(err));
+  mysql.createPool.restore();
+});
+
 test('store._set(model, obj, \'operation\') should reject for unsupported operation', (assert) => {
   assert.plan(1);
   const store = new Store(mysql, {});
