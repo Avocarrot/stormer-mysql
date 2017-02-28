@@ -382,7 +382,7 @@ test('store.count(model, query) should perform count query', (assert) => {
   const store = new Store(mysql, {});
   store.define('test', model);
 
-  store.count('test', {  foo: 'bar' })
+  store.count('test', {  foo: 'bar', _limit: 10, _offset: 100 })
     .then(actual => assert.deepEquals(actual, 1))
     .catch(err => assert.error(err));
   mysql.createPool.restore();
