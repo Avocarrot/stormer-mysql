@@ -373,7 +373,7 @@ test('store.count(model, query) should perform count query', (assert) => {
   sinon.stub(mysql, 'createPool', ()=> {
     return {
       query: (sql, cb) => {
-        assert.equals(sql, 'SELECT COUNT(*) AS `count` FROM `test` WHERE 1=1;');
+        assert.equals(sql, 'SELECT COUNT(*) AS `count` FROM `test` WHERE 1=1 AND `foo` = \'bar\';');
         cb(null, expected);
       }
     };
@@ -382,7 +382,7 @@ test('store.count(model, query) should perform count query', (assert) => {
   const store = new Store(mysql, {});
   store.define('test', model);
 
-  store.count('test', { })
+  store.count('test', {  foo: 'bar' })
     .then(actual => assert.deepEquals(actual, 1))
     .catch(err => assert.error(err));
   mysql.createPool.restore();
