@@ -56,19 +56,21 @@ test('store.alias() should alias a model name', (assert) => {
 });
 
 test('store.get("model", pk) should resolve with an object', (assert) => {
-  assert.plan(2);
+  assert.plan(3);
   const id = "some-uuid";
   const expected = { id: Date.now() };
+  let timeout = Math.random();
   sinon.stub(mysql, 'createPool', ()=> {
     return {
-      query: (sql, cb) => {
-        assert.equals(sql, "SELECT `id`, `foo` FROM `test_table_name` WHERE 1=1 AND `id` = 'some-uuid'  LIMIT 1;");
+      query: (options, cb) => {
+        assert.equals(options.sql, "SELECT `id`, `foo` FROM `test_table_name` WHERE 1=1 AND `id` = 'some-uuid'  LIMIT 1;");
+        assert.equals(options.timeout, timeout);
         cb(null, [ expected ]);
       }
     };
   });
 
-  const store = new Store(mysql, {});
+  const store = new Store(mysql, {timeout});
   store.define('test_table_name', model);
   store.alias('test', 'test_table_name');
 
@@ -140,17 +142,19 @@ test('store.get("model", pk) should reject with a NotFoundError', (assert) => {
 });
 
 test('store.create(model, {}) should resolve with obj created', (assert) => {
-  assert.plan(2);
+  assert.plan(3);
+  let timeout = Math.random();
   sinon.stub(mysql, 'createPool', ()=> {
     return {
-      query: (sql, cb) => {
-        assert.equals(sql,'INSERT INTO `test_table_name` (`id`,`foo`) VALUES (\'1\',\'1\');');
+      query: (options, cb) => {
+        assert.equals(options.sql,'INSERT INTO `test_table_name` (`id`,`foo`) VALUES (\'1\',\'1\');');
+        assert.equals(options.timeout, timeout);
         cb(null, { affectedRows: 1 });
       }
     };
   });
 
-  const store = new Store(mysql, {});
+  const store = new Store(mysql, { timeout });
   store.define('test_table_name', model);
   store.alias('test', 'test_table_name');
 
@@ -199,17 +203,19 @@ test('store.create(model, {}) should reject with err', (assert) => {
 });
 
 test('store.update(model, {}) should resolve with obj updated', (assert) => {
-  assert.plan(2);
+  assert.plan(3);
+  let timeout = Math.random();
   sinon.stub(mysql, 'createPool', ()=> {
     return {
-      query: (sql, cb) => {
-        assert.equals(sql,'UPDATE `test_table_name` SET `foo` = \'1\' WHERE `id` = \'1\' LIMIT 1;');
+      query: (options, cb) => {
+        assert.equals(options.sql,'UPDATE `test_table_name` SET `foo` = \'1\' WHERE `id` = \'1\' LIMIT 1;');
+        assert.equals(options.timeout, timeout);
         cb(null, { affectedRows: 1 });
       }
     };
   });
 
-  const store = new Store(mysql, {});
+  const store = new Store(mysql, { timeout });
   store.define('test_table_name', model);
   store.alias('test', 'test_table_name');
 
@@ -272,18 +278,20 @@ test('store.delete(model, query) should reject for not implemented', (assert) =>
 });
 
 test('store.filter(model, query) should resolve with array', (assert) => {
-  assert.plan(2);
+  assert.plan(3);
+  let timeout = Math.random();
   const expected = [ { foo: "1" }, { foo: "2" } ];
   sinon.stub(mysql, 'createPool', ()=> {
     return {
-      query: (sql, cb) => {
-        assert.equals(sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1 AND `foo` >= 1 AND `foo` =< 10;');
+      query: (options, cb) => {
+        assert.equals(options.sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1 AND `foo` >= 1 AND `foo` =< 10;');
+        assert.equals(options.timeout, timeout);
         cb(null, expected);
       }
     };
   });
 
-  const store = new Store(mysql, {});
+  const store = new Store(mysql, { timeout });
   store.define('test', model);
 
   store.filter('test', {
@@ -298,18 +306,20 @@ test('store.filter(model, query) should resolve with array', (assert) => {
 });
 
 test('store.filter(model, query) should query with limit/offset', (assert) => {
-  assert.plan(2);
+  assert.plan(3);
+  let timeout = Math.random();
   const expected = [ ];
   sinon.stub(mysql, 'createPool', ()=> {
     return {
-      query: (sql, cb) => {
-        assert.equals(sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1  LIMIT 1 OFFSET 10;');
+      query: (options, cb) => {
+        assert.equals(options.sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1  LIMIT 1 OFFSET 10;');
+        assert.equals(options.timeout, timeout);
         cb(null, expected);
       }
     };
   });
 
-  const store = new Store(mysql, {});
+  const store = new Store(mysql, { timeout });
   store.define('test', model);
 
   store.filter('test', {
@@ -322,18 +332,20 @@ test('store.filter(model, query) should query with limit/offset', (assert) => {
 });
 
 test('store.filter(model, query) should query with order by for existing properties', (assert) => {
-  assert.plan(2);
+  assert.plan(3);
+  let timeout = Math.random();
   const expected = [ ];
   sinon.stub(mysql, 'createPool', ()=> {
     return {
-      query: (sql, cb) => {
-        assert.equals(sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1 ORDER BY `foo` DESC, `id` ASC;');
+      query: (options, cb) => {
+        assert.equals(options.sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1 ORDER BY `foo` DESC, `id` ASC;');
+        assert.equals(options.timeout, timeout);
         cb(null, expected);
       }
     };
   });
 
-  const store = new Store(mysql, {});
+  const store = new Store(mysql, { timeout });
   store.define('test', model);
 
   store.filter('test', {
@@ -345,18 +357,20 @@ test('store.filter(model, query) should query with order by for existing propert
 });
 
 test('store.filter(model, query) should query without order by for not existing properties', (assert) => {
-  assert.plan(2);
+  assert.plan(3);
+  let timeout = Math.random();
   const expected = [ ];
   sinon.stub(mysql, 'createPool', ()=> {
     return {
-      query: (sql, cb) => {
-        assert.equals(sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1;');
+      query: (options, cb) => {
+        assert.equals(options.sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1;');
+        assert.equals(options.timeout, timeout);
         cb(null, expected);
       }
     };
   });
 
-  const store = new Store(mysql, {});
+  const store = new Store(mysql, { timeout });
   store.define('test', model);
 
   store.filter('test', {
@@ -368,18 +382,20 @@ test('store.filter(model, query) should query without order by for not existing 
 });
 
 test('store.count(model, query) should perform count query', (assert) => {
-  assert.plan(2);
+  assert.plan(3);
+  let timeout = Math.random();
   const expected = [ { count: 1 } ];
   sinon.stub(mysql, 'createPool', ()=> {
     return {
-      query: (sql, cb) => {
-        assert.equals(sql, 'SELECT COUNT(*) AS `count` FROM `test` WHERE 1=1 AND `foo` = \'bar\';');
+      query: (options, cb) => {
+        assert.equals(options.sql, 'SELECT COUNT(*) AS `count` FROM `test` WHERE 1=1 AND `foo` = \'bar\';');
+        assert.equals(options.timeout, timeout);
         cb(null, expected);
       }
     };
   });
 
-  const store = new Store(mysql, {});
+  const store = new Store(mysql, { timeout });
   store.define('test', model);
 
   store.count('test', {  foo: 'bar', _limit: 10, _offset: 100 })
