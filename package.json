@@ -1,6 +1,6 @@
 {
   "name": "stormer-mysql",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Implementation of Stormer Store for MySQL",
   "main": "index.js",
   "repository": "git@github.com:Avocarrot/stormer-mysql.git",
@@ -23,6 +23,6 @@
   "dependencies": {
     "debug": "^2.6.1",
     "mysql": "^2.13.0",
-    "stormer": "^0.9.0"
+    "stormer": "^0.10.0"
   }
 }

@@ -856,9 +856,9 @@ sqlstring@2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.2.0.tgz#c3135c4ea8abcd7e7ee741a4966a891d86a4f191"
 
-stormer@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/stormer/-/stormer-0.9.0.tgz#953ecc41f52d509494cf64c931b9a414aef8ae39"
+stormer@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/stormer/-/stormer-0.10.0.tgz#5ec0c0f26d37703f1814f752ff384e92d860d213"
   dependencies:
     bluebird "^2.10.2"
 
