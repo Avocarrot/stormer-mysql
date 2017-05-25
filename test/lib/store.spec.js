@@ -63,7 +63,7 @@ test('store.get("model", pk) should resolve with an object', (assert) => {
   sinon.stub(mysql, 'createPool', ()=> {
     return {
       query: (options, cb) => {
-        assert.equals(options.sql, "SELECT `id`, `foo` FROM `test_table_name` WHERE 1=1 AND `id` = 'some-uuid'  LIMIT 1;");
+        assert.equals(options.sql, "SELECT `id`, `foo` FROM `test_table_name` WHERE `id` = 'some-uuid'  LIMIT 1;");
         assert.equals(options.timeout, timeout);
         cb(null, [ expected ]);
       }
@@ -284,7 +284,7 @@ test('store.filter(model, query) should resolve with array', (assert) => {
   sinon.stub(mysql, 'createPool', ()=> {
     return {
       query: (options, cb) => {
-        assert.equals(options.sql, 'SELECT `id`, `foo` FROM `test` WHERE 1=1 AND `foo` >= 1 AND `foo` =< 10;');
+        assert.equals(options.sql, 'SELECT `id`, `foo` FROM `test` WHERE `foo` >= 1 AND `foo` =< 10;');
         assert.equals(options.timeout, timeout);
         cb(null, expected);
       }
@@ -299,6 +299,34 @@ test('store.filter(model, query) should resolve with array', (assert) => {
     max: new Condition('foo', '=<', 10),
     will_not_appear_in_query: new Condition('ho_ho_ho', '=<', 10),
     will_not_appear_in_query_2: new Condition('foo', '=<', 'ho_ho_ho', false),
+  })
+    .then(actual => assert.deepEquals(actual, expected))
+    .catch(err => assert.error(err));
+  mysql.createPool.restore();
+});
+
+test('store.filter(model, query) should prepare query with or conditions', (assert) => {
+  assert.plan(3);
+  let timeout = Math.random();
+  const expected = [ ];
+  sinon.stub(mysql, 'createPool', ()=> {
+    return {
+      query: (options, cb) => {
+        assert.equals(options.sql, 'SELECT `id`, `foo` FROM `test` WHERE (`id` = 1 OR `id` = 2) AND (`foo` = \'bar\' OR `foo` = \'foo\')  LIMIT 1 OFFSET 10;');
+        assert.equals(options.timeout, timeout);
+        cb(null, expected);
+      }
+    };
+  });
+
+  const store = new Store(mysql, { timeout });
+  store.define('test', model);
+
+  store.filter('test', {
+    search_for_id: [ new Condition('id', '=', 1), new Condition('id', '=', 2) ],
+    search_for_foo: [ new Condition('foo', '=', 'bar'), new Condition('foo', '=', 'foo') ],
+    _limit:  1,
+    _offset: 10
   })
     .then(actual => assert.deepEquals(actual, expected))
     .catch(err => assert.error(err));
@@ -388,7 +416,7 @@ test('store.count(model, query) should perform count query', (assert) => {
   sinon.stub(mysql, 'createPool', ()=> {
     return {
       query: (options, cb) => {
-        assert.equals(options.sql, 'SELECT COUNT(*) AS `count` FROM `test` WHERE 1=1 AND `foo` = \'bar\';');
+        assert.equals(options.sql, 'SELECT COUNT(*) AS `count` FROM `test` WHERE `foo` = \'bar\';');
         assert.equals(options.timeout, timeout);
         cb(null, expected);
       }
