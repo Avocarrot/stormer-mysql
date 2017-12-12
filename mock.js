@@ -1,4 +1,3 @@
-'use strict'
 const debug = require('debug')('stormer-mysql:mock');
 const util = require('util');
 const stormer = require('stormer');
@@ -27,9 +26,9 @@ class Dummy extends Store {
       });
       return entry;
     });
-    const max  = Math.max.apply(null, (this._dataset.get(name) || []).map(obj => obj.id)) || 0; 
+    const max  = Math.max.apply(null, (this._dataset.get(name) || []).map(obj => obj.id)) || 0;
     this._dataset.set(name, new Map(data));
-    
+
     this.models[name].map = this._dataset.get(name);
     this.models[name].auto_increment = max;
     return model;

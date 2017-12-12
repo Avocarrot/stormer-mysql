@@ -19,7 +19,7 @@ test('new Condition() should throw an error', (t) => {
       assert.equals(err.message, 'operator must be one of the operators: <>,>,>=,<,=<,=,LIKE');
     }
   });
-  t.test('for not supporrted operator', (assert) => {
+  t.test('for not supported operator', (assert) => {
     assert.plan(1);
     try { new Condition('test', '='); }
     catch(err) {
@@ -44,10 +44,11 @@ test('condition.toString() should return comparison check', (assert) => {
   assert.equals(String(new Condition('test', '=<', 'test2', false)), '`test` =< `test2`');
 });
 
-test('condition.toString() should handle Date object', (assert) => {
-  assert.plan(1);
+test('condition.toString() should transform objects', (assert) => {
+  assert.plan(2);
   const now = new Date();
-  assert.equals(String(new Condition('datefield', '=', now)), '`datefield` = \'' +  h.toMysqlDate(now) + '\'' );
+  assert.equals(String(new Condition('datefield', '=', now)), '`datefield` = \'' +  h.toMysqlValue(now) + '\'' );
+  assert.equals(String(new Condition('tinyint', '=', true)), '`tinyint` = 1');
 });
 
 test('condition.compare() should handle compare values', (assert) => {

@@ -15,7 +15,7 @@ const model = {
 
 test('new MySqlCachableStore() should throw an assert error', assert => {
   assert.plan(1);
-  sinon.stub(mysql, 'createPool', ()=>{});
+  sinon.stub(mysql, 'createPool').returns();
   try {
     new MySqlCachableStore(mysql, {});
   } catch(err) {
@@ -26,7 +26,7 @@ test('new MySqlCachableStore() should throw an assert error', assert => {
 
 test('MySqlCachableStore.get should perform query only once', assert => {
   assert.plan(3);
-  
+
   const expected = { id: String(Date.now() + Math.random()) };
   const pool = {
     query: sinon.spy((options, cb) => {
@@ -57,7 +57,7 @@ test('MySqlCachableStore.get should perform query only once', assert => {
 
 test('MySqlCachableStore.create should keep model in cache', assert => {
   assert.plan(3);
-  
+
   const expected = { id: String(Date.now() + Math.random()) };
   const pool = {
     query: sinon.spy((options, cb) => {
@@ -88,7 +88,7 @@ test('MySqlCachableStore.create should keep model in cache', assert => {
 
 test('MySqlCachableStore.create should keep model in cache', assert => {
   assert.plan(3);
-  
+
   const expected = { id: String(Date.now()) };
   const pool = {
     query: sinon.spy((options, cb) => {
@@ -119,7 +119,7 @@ test('MySqlCachableStore.create should keep model in cache', assert => {
 
 test('MySqlCachableStore.delete should reject unsupported', assert => {
   assert.plan(1);
-  
+
   const expected = { id: String(Date.now()) };
   const pool = {
     query: sinon.spy((options, cb) => {
