@@ -73,7 +73,7 @@ test('store.get("model", pk) should resolve with an object', (assert) => {
   store.alias('test', 'test_table_name');
 
   store.get('test', id)
-    .then(actual => assert.equals(actual, expected))
+    .then(actual => assert.deepEquals(actual, expected))
     .catch(err => assert.error(err));
 
   mysql.createPool.restore();
