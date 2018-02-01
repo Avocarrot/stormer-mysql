@@ -209,6 +209,46 @@ test('store.update(model, {}) should resolve with obj updated', (assert) => {
   mysql.createPool.restore();
 });
 
+test('store.update(model, {}) should patch requested attributes', assert => {
+  assert.plan(1);
+  sinon.stub(mysql, 'createPool').returns({
+    query: (options, cb) => {
+      assert.equals(options.sql, 'UPDATE `test_table_name` SET `bar` = \'test\' WHERE `id` = \'1\' LIMIT 1;');
+      cb(null, { affectedRows: 1 });
+    }
+  });
+
+  const store = new Store(mysql, { timeout: 3000 });
+  const model = {
+    id:  { type: 'String', primaryKey: true },
+    foo: { type: 'String' },
+    bar: { type: 'String' }
+  };
+  store.define('test_table_name', model);
+  store.update('test_table_name', { id: '1', bar: 'test' });
+  mysql.createPool.restore();
+});
+
+test('store.update(model, {}) should ignore default values when updating', assert => {
+  assert.plan(1);
+  sinon.stub(mysql, 'createPool').returns({
+    query: (options, cb) => {
+      assert.equals(options.sql, 'UPDATE `test_table_name` SET `bar` = \'test\' WHERE `id` = \'1\' LIMIT 1;');
+      cb(null, { affectedRows: 1 });
+    }
+  });
+
+  const store = new Store(mysql, { timeout: 3000 });
+  const model = {
+    id:  { type: 'String', primaryKey: true },
+    foo: { type: 'String', default: '1' },
+    bar: { type: 'String' }
+  };
+  store.define('test_table_name', model);
+  store.update('test_table_name', { id: '1', bar: 'test' });
+  mysql.createPool.restore();
+});
+
 test('store.update(model, {}) should reject with err', (assert) => {
   assert.plan(1);
   const expected = new Error('some error');
