@@ -1,3 +1,5 @@
+**DEPRECATED** **Moved to gitlab.glispa.com:ssp/stormer-mysql**
+
 # Stormer MySQL
 Implementation of Stormer Store for MySQL
 
